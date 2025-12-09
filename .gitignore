@@ -1,0 +1,71 @@
+# Byte-compiled / cached
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Distribution / packaging
+.Python
+build/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Logs and coverage
+*.log
+pip-log.txt
+pip-delete-this-directory.txt
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+.cache
+
+# Django
+local_settings.py
+db.sqlite3
+*.sqlite3
+media/
+staticfiles/
+mydatabase/
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Environment variables
+.env.local
+.env.dev
+.env.prod
+.env.test
+.env.*.local
+
+# IDE/editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store

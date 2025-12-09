@@ -1,0 +1,48 @@
+{% extends 'shopping/basic.html' %} {% load static %}
+{% block body %}
+<div class="container my-5" style="max-width: 640px;">
+  <h3 class="mb-4">Create Account</h3>
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+  <form method="post" action="/shopping/register/">
+    {% csrf_token %}
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="first_name">First Name</label>
+        <input type="text" class="form-control" id="first_name" name="first_name" required />
+      </div>
+      <div class="form-group col-md-6">
+        <label for="last_name">Last Name</label>
+        <input type="text" class="form-control" id="last_name" name="last_name" required />
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input type="text" class="form-control" id="username" name="username" required />
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" class="form-control" id="email" name="email" required />
+    </div>
+    <div class="form-group">
+      <label for="phone">Phone</label>
+      <input type="text" class="form-control" id="phone" name="phone" />
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" name="password" required />
+      </div>
+      <div class="form-group col-md-6">
+        <label for="confirm_password">Confirm Password</label>
+        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required />
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Register</button>
+    <a class="btn btn-link" href="/shopping/login/">Already have an account?</a>
+  </form>
+</div>
+{% endblock %}

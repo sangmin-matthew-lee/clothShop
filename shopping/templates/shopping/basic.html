@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+      integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+      crossorigin="anonymous"
+    />
+
+    <title>{% block title%} ClothShop {% endblock %}</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1' y1='0' y2='1'%3E%3Cstop offset='0%' stop-color='%230b132b'/%3E%3Cstop offset='100%' stop-color='%233a506b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect rx='12' ry='12' width='64' height='64' fill='url(%23g)'/%3E%3Cpath d='M16 18h6l4 22h16l4-14H24' stroke='%23fff' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='28' cy='48' r='3' fill='%23fff'/%3E%3Ccircle cx='42' cy='48' r='3' fill='%23fff'/%3E%3Ctext x='16' y='18' fill='%23fff' font-family='Arial, sans-serif' font-size='10' font-weight='bold'%3EShop%3C/text%3E%3C/svg%3E"
+    />
+    <style>
+      .brand-mark {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .brand-logo {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #0b132b, #3a506b);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 800;
+        font-size: 14px;
+        letter-spacing: 0.5px;
+      }
+      .cart-pop-name {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 170px;
+        line-height: 1.2;
+      }
+      {% block css %} {% endblock %}
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand brand-mark" href="/shopping">
+        <span class="brand-logo">CS</span>
+        <span>ClothShop</span>
+      </a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        {% with current=request.resolver_match.url_name %}
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item {% if current == 'ShopHome' or current == 'ProductView' %}active{% endif %}">
+            <a class="nav-link" href="/shopping">Home</a>
+          </li>
+          <li class="nav-item {% if current == 'AllProducts' %}active{% endif %}">
+            <a class="nav-link" href="/shopping/all-products/">All Products</a>
+          </li>
+          <li class="nav-item {% if current == 'AboutUs' %}active{% endif %}">
+            <a class="nav-link" href="/shopping/about">About Us</a>
+          </li>
+
+          <li class="nav-item {% if current == 'TrackingStatus' %}active{% endif %}">
+            <a class="nav-link" href="/shopping/tracker">Orders</a>
+          </li>
+
+          <li class="nav-item {% if current == 'ContactUs' %}active{% endif %}">
+            <a class="nav-link" href="/shopping/contact">Contact Us</a>
+          </li>
+
+          <li class="nav-item {% if current == 'Recommend' %}active{% endif %}">
+            <a class="nav-link" href="/shopping/recommend/">AI Deals</a>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              My Account
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              {% if user.is_authenticated %}
+              <a class="dropdown-item {% if current == 'logout' %}active{% endif %}" href="/shopping/logout">Logout</a>
+              {% else %}
+              <a class="dropdown-item {% if current == 'login' %}active{% endif %}" href="/shopping/login">Login</a>
+              <a class="dropdown-item {% if current == 'register' %}active{% endif %}" href="/shopping/register">Register</a>
+              {% endif %}
+            </div>
+          </li>
+        </ul>
+        {% endwith %}
+        <form
+          method="get"
+          action="/shopping/search/"
+          class="form-inline my-2 my-lg-0"
+        >
+          <input
+            class="form-control mr-sm-2"
+            type="search"
+            placeholder="Search"
+            aria-label="Search"
+            name="search"
+            id="search"
+          />
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
+            Search
+          </button>
+        </form>
+        <button
+          type="button"
+          class="btn btn-secondary mx-2"
+          id="popcart"
+          data-container="body"
+          data-toggle="popover"
+          data-placement="bottom"
+          data-html="true"
+          data-content="Vivamus
+sagittis lacus vel augue laoreet rutrum faucibus."
+        >
+          Cart(<span id="cart">0</span>)
+        </button>
+      </div>
+    </nav>
+    {% block body %} {% endblock %}
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.js"
+      integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
+      integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
+      integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      // Keep the navbar cart badge/popover in sync even on pages without product cards.
+      (function syncNavCart() {
+        const cartBadge = document.getElementById("cart");
+        const popcart = document.getElementById("popcart");
+        if (!cartBadge || !popcart) return;
+        let cart = {};
+        try {
+          cart = JSON.parse(localStorage.getItem("cart")) || {};
+        } catch (err) {
+          cart = {};
+        }
+        const total = Object.values(cart).reduce((sum, val) => sum + (val?.[0] || 0), 0);
+        cartBadge.textContent = total;
+
+        // If a page already defines updateCart (product listing), let it manage the popover.
+        if (typeof window.updateCart === "function") {
+          return;
+        }
+        let i = 1;
+        const lines = Object.entries(cart).map(([key, val]) => {
+          const name = (val && val[1]) || key;
+          return `<div class="d-flex justify-content-between align-items-start mb-1"><div class="d-flex align-items-start"><b class="mr-1">${i++}.</b><span class="cart-pop-name">${name}</span></div></div>`;
+        });
+        const popStr =
+          "<h5>Your cart</h5><div class='mx-2 my-2'>" +
+          (lines.join("") || "Your cart is empty.") +
+          "</div> <a href='/shopping/checkout'><button class='btn btn-primary' id ='checkout'>Checkout</button></a> <button class='btn btn-primary' onclick='localStorage.clear(); location.reload();' id ='clearCart'>Clear Cart</button>";
+        popcart.setAttribute("data-content", popStr);
+        // Do not show popover automatically; clicking goes to checkout.
+        $("#popcart").popover("dispose");
+        popcart.onclick = function () {
+          window.location.href = "/shopping/checkout/";
+        };
+      })();
+    </script>
+    {% block js %} {% endblock %}
+  </body>
+</html>

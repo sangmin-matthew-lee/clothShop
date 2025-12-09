@@ -1,0 +1,131 @@
+{% extends 'shopping/basic.html' %}
+{% block title %} Orders{% endblock %}
+{% block body %}
+<div class="container">
+    <div class="col my-4">
+        <h2> Enter Your Order Id and Email address to track your order </h2>
+
+           <form method="post" action="#" id="trackerForm">{% csrf_token %}
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="inputname">Order Id</label>
+                    <input type="text" class="form-control" id="orderId" name="orderId" placeholder="Order Id">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="inputEmail4">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Email">
+                </div>
+                 <button type="submit" class="btn btn-primary">Track Order</button>
+            </div>
+    </div>
+    <div class="col my-4">
+        <h2>Your Orders :</h2>
+        <div class="my-4">
+            <ul class="list-group" id="items">
+            </ul>
+        </div>
+        <h2>Your Order Details </h2>
+        <div class="my-4">
+            <ul class="list-group" id="citems">
+            </ul>
+        </div>
+       
+    </div>
+</div>
+{% endblock %}
+{%block js%}
+<script>
+    $('#trackerForm').submit(function(event) {
+        $('#items').empty();
+        var formData = {
+            'orderId': $('input[name=orderId]').val(),
+            'email': $('input[name=email]').val(),
+            'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+        };
+        $.ajax({
+                type: 'POST',
+                url: '/shopping/tracker/',
+                data: formData,
+                encode: true
+            })
+            .done(function(data) {
+                $('#citems').empty();
+                console.log(data)
+                data = JSON.parse(data)
+                
+                if (data['status']=='success') {
+                    updates = data['updates'];
+                    if (updates.length > 0) {
+                        const firstTime = new Date(updates[0]['time']);
+                        const est = new Date(firstTime);
+                        est.setDate(est.getDate() + 2);
+                        let estDate = est.toISOString().split('T')[0];
+                        // First update row with cancel button and estimated delivery
+                        let firstRow = `<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                            <div>
+                              <div>${updates[0]['text']}</div>
+                              <small class="text-muted">Order date: ${updates[0]['time']}</small>
+                              <div class="text-muted">Est. delivery: ${estDate}</div>
+                            </div>
+                            <div class="mt-2 mt-md-0">
+                              <button class="btn btn-sm btn-outline-danger" id="cancelOrderBtn">Cancel Order</button>
+                            </div>
+                        </li>`;
+                        $('#items').append(firstRow);
+                        // Remaining updates
+                        for (i = 1; i < updates.length; i++) {
+                            let text = updates[i]['text'];
+                            let time = updates[i]['time'];
+                            mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
+                            ${text}
+                            <span class="badge badge-primary badge-pill">${time}</span>
+                        </li>`
+                            $('#items').append(mystr);
+                        }
+                        // Hook cancel button
+                        $('#cancelOrderBtn').click(function() {
+                          $.ajax({
+                            type: 'POST',
+                            url: '/shopping/cancel/' + formData.orderId + '/',
+                            data: {'csrfmiddlewaretoken': formData.csrfmiddlewaretoken},
+                          }).done(function() {
+                            alert('Order cancelled.');
+                            location.reload();
+                          }).fail(function() {
+                            alert('Could not cancel the order. Please try again.');
+                          });
+                        });
+                    }
+                    // Order details
+                    cart = JSON.parse(data['itemsJson']);
+                    console.log(cart);
+                    for (item in cart) {
+                        let name = cart[item][1];
+                        let qty = cart[item][0];
+                        let price = cart[item][2] || 0;
+                        let lineTotal = qty * price;
+                        mystr = `<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                            <div>
+                              <div>${name}</div>
+                              <small class="text-muted">Price: Rs.${price}</small>
+                            </div>
+                            <div class="d-flex align-items-center">
+                              <span class="badge badge-primary badge-pill mr-2">Qty: ${qty}</span>
+                              <span class="badge badge-secondary badge-pill">Rs.${lineTotal}</span>
+                            </div>
+                        </li>`
+                        $('#citems').append(mystr);
+                    }
+                } 
+                else {
+                    mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
+                        Sorry, We are not able to fetch this order id and email. Make sure to type correct order Id and email</li>`
+                    $('#items').append(mystr);
+                    $('#citems').append(mystr);
+                }
+                
+            });
+        event.preventDefault();
+    });
+</script>
+{%endblock%}

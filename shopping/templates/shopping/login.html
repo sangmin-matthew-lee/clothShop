@@ -1,0 +1,24 @@
+{% extends 'shopping/basic.html' %} {% load static %}
+{% block body %}
+<div class="container my-5" style="max-width: 480px;">
+  <h3 class="mb-4">Login</h3>
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+  <form method="post" action="/shopping/login/">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" class="form-control" id="email" name="email" required />
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" class="form-control" id="password" name="password" required />
+    </div>
+    <button type="submit" class="btn btn-primary">Login</button>
+    <a class="btn btn-link" href="/shopping/register/">Create account</a>
+  </form>
+</div>
+{% endblock %}
